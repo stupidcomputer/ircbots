@@ -8,17 +8,14 @@
 #include <arpa/inet.h>
 #include <string.h>
 
-#include "messages.h"
 #define CBSIZE 2048
 
 const char *blocked[] = {
-    "MIF",
-    "attack",
-    "unexpectedEOF",
-    "jan3",
-    "c-69-255-237-187.hsd1.md.comcast.net"
 };
-const char *blockmsg = "Error 404: no";
+const char *kickonjoin[] = {
+};
+const char *floodmsg = "HONK HONK HONK HONK HONK HONK HONK HONK HONK HONK HONK HONK HONK HONK HONK HONK HONK HONK";
+const char *blockmsg = "Error 418: no";
 const char *username = "guest_03384";
 const char *channel = "#chaos";
 const char *topic = "rule one: you are now a duck. ・゜゜・。。・゜゜\\_o< QUACK!";
@@ -76,6 +73,7 @@ int main()
     const char host[] = "localhost";
     const int port = 6667;
     char *ip;
+    int autokick = 1;
 
     if(!(h = gethostbyname(host))) {
         perror("gethostbyname");
@@ -104,25 +102,31 @@ int main()
     snprintf(buf, sizeof(buf), "NICK %s\r\n", username, host);
     write(cbuf->fd, buf, strlen(buf));
     while(read_line(cbuf, buf, sizeof(buf)) > 0) {
-	if(strstr(buf, "001") != NULL) {
-		printf("%s", buf);
-		break;
-	}
-        printf("%s", buf);
+	    if(strstr(buf, "001") != NULL) {
+		  printf("%s", buf);
+		  break;
+    	}
+      printf("%s", buf);
     }
     snprintf(buf, sizeof(buf), "JOIN %s\r\n", channel, host);
     write(cbuf->fd, buf, strlen(buf));
     snprintf(buf, sizeof(buf), "PRIVMSG NickServ :identify %s\r\n", password, host);
     write(cbuf->fd, buf, strlen(buf));
     while(read_line(cbuf, buf, sizeof(buf)) > 0) {
-	if(strstr(buf, "hello loser") != NULL) {
-    		snprintf(buf, sizeof(buf), "PRIVMSG %s :you're a loser\r\n", channel, host);
-    		write(cbuf->fd, buf, strlen(buf));
-    		snprintf(buf, sizeof(buf), "NOTICE %s :you're a loser\r\n", channel, host);
-    		write(cbuf->fd, buf, strlen(buf));
-    		snprintf(buf, sizeof(buf), "PRIVMSG %s :someone called me loser :(\r\n", owner, host);
-    		write(cbuf->fd, buf, strlen(buf));
-	}
+	  if(strstr(buf, "hello loser") != NULL) {
+      snprintf(buf, sizeof(buf), "PRIVMSG %s :you're a loser\r\n", channel, host);
+      write(cbuf->fd, buf, strlen(buf));
+      snprintf(buf, sizeof(buf), "NOTICE %s :you're a loser\r\n", channel, host);
+      write(cbuf->fd, buf, strlen(buf));
+      snprintf(buf, sizeof(buf), "PRIVMSG %s :someone called me loser :(\r\n", owner, host);
+      write(cbuf->fd, buf, strlen(buf));
+	  }
+	if((strstr(buf, "stop autokicking") != NULL) && (strstr(buf, owner) != NULL)) {
+        autokick = 0;
+  }
+	if((strstr(buf, "start autokicking") != NULL) && (strstr(buf, owner) != NULL)) {
+        autokick = 1;
+  }
 	if(strstr(buf, "PING") != NULL ) {
     		snprintf(buf, sizeof(buf), "PONG :club.tilde.chat\r\n", host);
     		write(cbuf->fd, buf, strlen(buf));
@@ -132,11 +136,50 @@ int main()
     		write(cbuf->fd, buf, strlen(buf));
 	}
 	if(strstr(buf, "JOIN") != NULL) {
+    if(autokick == 1) {
 		for(int i = 0; i <= sizeof(blocked)/sizeof(blocked[0]); i++) {
 			if(strstr(buf, blocked[i]) != NULL) {
 	    			snprintf(buf, sizeof(buf), "KICK %s %s :%s\r\n", channel, blocked[i], blockmsg, host);
 	    			write(cbuf->fd, buf, strlen(buf));
 			}
+		}
+    }
+	}
+	if((strstr(buf, "initiate honkage") != NULL) && (strstr(buf, owner) != NULL)) {
+		for(int i = 0; i < 41; i++) {
+			snprintf(buf, sizeof(buf), "PRIVMSG %s :%s\r\n", channel, floodmsg, host);
+			write(cbuf->fd, buf, strlen(buf));
+		}
+	}
+	if((strstr(buf, "xfnwcool") != NULL) && (strstr(buf, owner) != NULL)) {
+		for(int i = 0; i < 41; i++) {
+			snprintf(buf, sizeof(buf), "MODE #chaos lock set -euaoq *!*@* julian julian julian\r\n", host);
+			write(cbuf->fd, buf, strlen(buf));
+		}
+	}
+	if((strstr(buf, "space space") != NULL) && (strstr(buf, owner) != NULL)) {
+		for(int i = 0; i < 41; i++) {
+			snprintf(buf, sizeof(buf), "PRIVMSG %s : \r\n", channel, floodmsg, host);
+			write(cbuf->fd, buf, strlen(buf));
+		}
+	}
+	if(strstr(buf, "ping hell") != NULL) {
+		snprintf(buf, sizeof(buf), "INVITE tildebot %s\r\n", channel, host);
+		write(cbuf->fd, buf, strlen(buf));
+		sleep(5);
+		snprintf(buf, sizeof(buf), "PRIVMSG %s :,c c op-ping yes\r\n", channel, host);
+		write(cbuf->fd, buf, strlen(buf));
+		for(int i = 0; i < 20; i++) {
+			snprintf(buf, sizeof(buf), "PRIVMSG %s :,ops\r\n", channel, host);
+			write(cbuf->fd, buf, strlen(buf));
+			snprintf(buf, sizeof(buf), "PRIVMSG %s :,more\r\n", channel, host);
+			write(cbuf->fd, buf, strlen(buf));
+			snprintf(buf, sizeof(buf), "PRIVMSG %s :,more\r\n", channel, host);
+			write(cbuf->fd, buf, strlen(buf));
+			snprintf(buf, sizeof(buf), "PRIVMSG %s :,more\r\n", channel, host);
+			write(cbuf->fd, buf, strlen(buf));
+			snprintf(buf, sizeof(buf), "PRIVMSG %s :,more\r\n", channel, host);
+			write(cbuf->fd, buf, strlen(buf));
 		}
 	}
 	if(strstr(buf, "ban") != NULL) {
