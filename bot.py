@@ -17,7 +17,7 @@ from secrets import PASSWORD
 kickees = Nicklist()
 exempt = Nicklist()
 CHANNEL = "#chaos"
-BOTNAME = "rndbotmerp"
+BOTNAME = "rndbot"
 OWNER = "rndusr"
 TOPIC = "rule one: you are now a duck. ・゜゜・。。・゜゜\\_o< QUACK!"
 SPAMUSER = ""
@@ -30,7 +30,7 @@ class Server(BaseServer):
         LOGFILE.write(f"{self.name} < {line.format()}")
         if line.command == "001":
             await self.send(build("PRIVMSG", ["NickServ", "identify " + PASSWORD]))
-            await self.send(build("MODE", [BOTNAME, "+B"]))
+            #await self.send(build("MODE", [BOTNAME, "+B"]))
             await self.send(build("JOIN", [CHANNEL]))
         if line.command == "474":
             await self.send(build("PRIVMSG", ["ChanServ", "unban " + CHANNEL + " " + BOTNAME]))
@@ -38,6 +38,9 @@ class Server(BaseServer):
             await self.send(build("PRIVMSG", ["ChanServ", "invite " + CHANNEL + " " + BOTNAME]))
             await self.send(build("JOIN", [CHANNEL]))
         if line.command == "PRIVMSG" and line.params[0] == CHANNEL:
+            if line.hostmask.nickname == 'tildebot':
+                if line.params[1] == '・゜゜・。。・゜゜\_o< CHAOS!':
+                    await self.send(build('PRIVMSG', [CHANNEL, ',bef']))
             if line.hostmask.nickname == OWNER:
                 if BOTNAME + ": quit" == line.params[1]:
                     await self.send(build('PART', [CHANNEL, MESSAGES['quit']]))
@@ -101,9 +104,11 @@ class Server(BaseServer):
                     if exempt.read('exempt'):
                         pass
                 if BOTNAME + ": kickall" in line.params[1]:
-                    for i in self.channels[CHANNEL].users:
-                        if i != OWNER:
-                            asyncio.create_task(self.send(build('KICK', [CHANNEL, i, 'nope'])))
+                    for i in self.channels[CHANNEL].users.keys():
+                        if i != OWNER and i != BOTNAME:
+                            await self.send(build('KICK', [CHANNEL, i, 'nope']))
+                if "no u" == line.params[1] and line.hostname.nickname != BOTNAME:
+                    await self.send(build('PRIVMSG', [CHANNEL, 'no u']))
 
         if line.command == "JOIN":
             if line.hostmask.nickname in kickees:
@@ -120,8 +125,8 @@ class Server(BaseServer):
                     await self.send(build('MODE', [CHANNEL, '-n']))
                 if 'm' in self.channels[CHANNEL].modes:
                     await self.send(build('MODE', [CHANNEL, '-m']))
-                if 's' in self.channels[CHANNEL].modes:
-                    await self.send(build('MODE', [CHANNEL, '-s']))
+#                if 's' in self.channels[CHANNEL].modes:
+#                    await self.send(build('MODE', [CHANNEL, '-s']))
                 if not 'q' in self.channels[CHANNEL].users[OWNER].modes:
                     await self.send(build('MODE', [CHANNEL, '+q', OWNER]))
                 if 'b' in self.channels[CHANNEL].users[BOTNAME].modes:
@@ -131,14 +136,30 @@ class Server(BaseServer):
             except KeyError:
                 pass
         if line.command == "KICK" and line.params[0] == CHANNEL:
+            print(line.params)
             if line.params[1] == OWNER:
-                await self.send(build('KICK', [CHANNEL, line.hostmask.nickname, MESSAGES['revenge']]))
-                await self.send(build('INVITE', [CHANNEL, line.params[1]]))
+                if line.params[2] == 'User has been banned from the channel':
+                    await self.send(build('PRIVMSG', ['chanserv', \
+                        'akick ' + CHANNEL + ' del ' + OWNER]))
+                    await self.send(build('PRIVMSG', ['chanserv', \
+                        'unban ' + CHANNEL + ' ' + OWNER]))
+                else:
+                    await self.send(build('KICK', [CHANNEL, line.hostmask.nickname, MESSAGES['revenge']]))
+                    await self.send(build('INVITE', [CHANNEL, line.params[1]]))
             if line.params[1] == BOTNAME:
-                time.sleep(1)
-                await self.send(build('JOIN', [CHANNEL]))
-                time.sleep(0.5)
-                await self.send(build('KICK', [CHANNEL, line.hostmask.nickname, MESSAGES['revenge']]))
+                if line.params[2] == 'User has been banned from the channel':
+                    await self.send(build('PRIVMSG', ['chanserv', \
+                        'akick ' + CHANNEL + ' del ' + BOTNAME]))
+                    await self.send(build('PRIVMSG', ['chanserv', \
+                        'unban ' + CHANNEL + ' ' + BOTNAME]))
+                    await self.send(build('JOIN', [CHANNEL]))
+                else:
+                    await self.send(build('PRIVMSG', ['chanserv', \
+                            'akick ' + CHANNEL + ' add ' + line.hostmask.nickname]))
+                    time.sleep(1)
+                    await self.send(build('JOIN', [CHANNEL]))
+                    time.sleep(0.5)
+                    await self.send(build('KICK', [CHANNEL, line.hostmask.nickname, MESSAGES['revenge']]))
         if line.command == "TOPIC" and line.params[0] == CHANNEL:
             if line.hostmask.nickname != OWNER and \
                 line.hostmask.nickname != BOTNAME and \
