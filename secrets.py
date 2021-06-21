@@ -1,1 +1,0 @@
-PASSWORD='randomuser_bots'
