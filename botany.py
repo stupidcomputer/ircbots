@@ -1,0 +1,73 @@
+import json
+import time
+import os
+
+class Botany:
+    visitors = "/home/{}/.botany/visitors.json"
+    plant = "/home/{}/.botany/{}_plant_data.json"
+    def __init__(self, user):
+        self.user = user
+    def getVisitors(self):
+        formatted = self.visitors.format(self.user)
+        try:
+            if os.stat(formatted).st_size > 0:
+                with open(formatted) as fd:
+                    return json.load(fd)
+            else:
+                return []
+        except FileNotFoundError:
+            print("FileNotFoundError in getVisitors()")
+            return False
+    def insertVisitor(self, data, waterer):
+        if data == False: return False
+        formatted = self.visitors.format(self.user)
+        data.append({"timestamp": int(time.time()), "user": waterer})
+        try:
+            with open(formatted, "w") as fd:
+                json.dump(data, fd, indent=4)
+                return True
+        except PermissionError:
+            print("PermissionError in insertVisitor()")
+            return False
+        except FileNotFoundError:
+            print("FileNotFoundError in insertVisitor()")
+            return False
+    def getInfo(self):
+        formatted = self.plant.format(self.user, self.user)
+        try:
+            with open(formatted) as fd:
+                return json.load(fd)
+        except:
+            print("error in getInfo()")
+            return []
+
+class IRCBotany(Botany):
+    def plantDescription(self):
+        string = ""
+        data = self.getInfo()
+        if(data == []): return "{}'s invisible plant".format(self.user)
+
+        string += self.user
+        print(self.user)
+        string += "'s "
+        if(data['is_dead']): string += "dead "
+        string += data['description']
+        string += ' '
+        string += "generation "
+        string += str(data['generation'])
+        string += ' '
+        string += "plant"
+
+        return string
+
+    def cantWater(self):
+        return "I can't water {}!".format(self.plantDescription())
+
+    def watered(self):
+        return "I watered {}!".format(self.plantDescription())
+
+    def dead(self):
+        return "Your {} is dead!".format(self.plantDescription())
+
+    def water(self, waterer):
+        return self.insertVisitor(self.getVisitors(), waterer)
