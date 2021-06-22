@@ -1,4 +1,7 @@
 import asyncio
+import os
+import random
+import time
 
 from irctokens import build, Line
 from ircrobots import Bot as BaseBot
@@ -10,16 +13,23 @@ from botany import IRCBotany as Botany
 from secrets import PASSWORD
 
 channels = [
-    "#bots",
-#    "#club",
+#    "#bots",
+    "#club",
+    "###",
 ]
-helpmessage = "hey, i'm botanybot. i water plants on ~club. my prefix is % and i was made by randomuser. check out https://ttm.sh/Fki.txt for more information."
+helpmessage = "hey, i'm botanybot. i water plants on ~club. my prefix is % and i was made by randomuser. check out https://ttm.sh/FoF.txt for more information."
+
+def userchooser(user):
+    return random.choice([i for i in os.listdir(r"/home") if i[0] == user[0]])
 
 class Server(BaseServer):
     admin = 'rndusr'
     async def msg(self, chan, string, user=None):
         if user == None: await self.send(build("PRIVMSG", [chan, string]))
         else: await self.send(build("PRIVMSG", [chan, user + ": " + string]))
+    def isDrunk(self):
+        if abs(self.drunkentime - int(time.time())) > 30: return True
+        return False
     async def line_read(self, line: Line):
         print(f"{self.name} < {line.format()}")
         if line.command == "001":
@@ -27,6 +37,7 @@ class Server(BaseServer):
             await self.msg("nickserv", "identify " + PASSWORD)
             for i in channels:
                 await self.send(build("JOIN", [i]))
+            self.drunkentime = 0
         if line.command == "PRIVMSG":
             user = line.hostmask.nickname
             channel = line.params[0]
@@ -34,19 +45,34 @@ class Server(BaseServer):
                 await self.msg(channel, helpmessage, user)
             if line.params[-1][0] == '%':
                 commands = line.params[-1][1:].split(' ')
+                if commands[0] == "vodka":
+                    if self.isDrunk():
+                        self.drunkentime = int(time.time())
+                        await self.msg(channel, "glug glug glug", user)
+                    else:
+                        await self.msg(channel, "vodka? what's vodka? *burp*", user)
                 if commands[0] == "desc":
                     if len(commands) == 2:
-                        b = Botany(commands[1])
+                        if self.isDrunk():
+                            b = Botany(commands[1])
+                        else:
+                            b = Botany(userchooser(commands[1]))
                         await self.msg(channel, b.plantDescription(), user)
                     else:
                         await self.msg(channel, "specify user", user)
                 elif commands[0] == "water":
                     if len(commands) == 2:
-                        b = Botany(commands[1])
-                        if(b.water("{} (via IRC)".format(user))):
-                            await self.msg(channel, b.watered(), user)
+                        if self.isDrunk():
+                            b = Botany(commands[1])
+                            if b.water("{} (via IRC)".format(user)):
+                                await self.msg(channel, b.watered(), user)
+                            else:
+                                await self.msg(channel, b.cantWater(), user)
                         else:
-                            await self.msg(channel, b.cantWater(), user)
+                            b = Botany(userchooser(commands[1]))
+                            while not b.water("{} (via IRC".format(user)):
+                                b = Botany(userchooser(commands[1]))
+                            await self.msg(channel, b.watered(), user)
                 elif commands[0] == "help":
                     await self.msg(channel, helpmessage, user)
                 elif commands[0] == "join":
