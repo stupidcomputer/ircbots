@@ -1,0 +1,39 @@
+tilde.club botany bot
+=====================
+
+commands
+--------
+
+!rollcall - supported only in #bots
+  see the help text for the bot
+%desc <account>
+  see a person's plant description
+  - if there is no plant associated to the account, they will
+    have an 'invisible plant'
+
+  %desc nouser
+  nouser's invisible plant
+
+%water <account>
+  water a person's plant
+  - if there is no plant associated to the account, this call
+    will error
+
+  %water nouser
+  I can't water nouser's invisible plant!
+
+%join <channel>
+  make the bot join a channel
+  - requires admin privs
+
+  %join #chaos
+  joined the channel
+
+%chowner <nick>
+  change the admin of the bot, for the session
+  - requires admin privs
+
+  %chowner rndusx
+  admin changed
+
+see tildegit.org/randomuser/botanybot for the source
