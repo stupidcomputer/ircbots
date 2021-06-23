@@ -15,7 +15,7 @@ from secrets import PASSWORD
 
 channels = [
     "#bots",
-#    "#club",
+    "#club",
     "###",
 ]
 helpmessage = "hey, i'm botanybot. i water plants on ~club. my prefix is % and i was made by randomuser. check out https://ttm.sh/Fs4.txt for more information."
