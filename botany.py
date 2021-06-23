@@ -7,8 +7,9 @@ class Botany:
     plant = "/home/{}/.botany/{}_plant_data.json"
     def __init__(self, user):
         self.user = user
+        self.euser = user.lower()
     def getVisitors(self):
-        formatted = self.visitors.format(self.user)
+        formatted = self.visitors.format(self.euser)
         try:
             if os.stat(formatted).st_size > 0:
                 with open(formatted) as fd:
@@ -20,7 +21,7 @@ class Botany:
             return False
     def insertVisitor(self, data, waterer):
         if data == False: return False
-        formatted = self.visitors.format(self.user)
+        formatted = self.visitors.format(self.euser)
         data.append({"timestamp": int(time.time()), "user": waterer})
         try:
             with open(formatted, "w") as fd:
@@ -33,7 +34,7 @@ class Botany:
             print("FileNotFoundError in insertVisitor()")
             return False
     def getInfo(self):
-        formatted = self.plant.format(self.user, self.user)
+        formatted = self.plant.format(self.euser, self.euser)
         try:
             with open(formatted) as fd:
                 return json.load(fd)
@@ -48,10 +49,10 @@ class IRCBotany(Botany):
     def plantDescription(self):
         string = ""
         data = self.getInfo()
-        if(data == []): return "{}'s invisible plant".format(self.user)
+        if(data == []): return "{}'s invisible plant".format(self.euser)
 
-        string += self.user
-        print(self.user)
+        string += self.euser
+        print(self.euser)
         string += "'s "
         if(data['is_dead']): string += "dead "
         string += data['description']
