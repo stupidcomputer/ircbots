@@ -52,8 +52,7 @@ class IRCBotany(Botany):
         data = self.getInfo()
         if(data == []): return "{}'s invisible plant".format(self.euser)
 
-        string += self.euser
-        print(self.euser)
+        string += self.user
         string += "'s "
         if(data['is_dead']): string += "dead "
         string += data['description']
