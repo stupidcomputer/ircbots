@@ -40,6 +40,9 @@ class Botany:
         except:
             print("error in getInfo()")
             return []
+    def score(self):
+        i = self.getInfo()
+        return i['score'] + min(i['last_watered'] - int(time.time()), 24 * 3600) * 0.2 * (i['generation'] - 1) + 1
 
 class IRCBotany(Botany):
     def plantDescription(self):

@@ -13,8 +13,8 @@ from botany import IRCBotany as Botany
 from secrets import PASSWORD
 
 channels = [
-#    "#bots",
-    "#club",
+    "#bots",
+#    "#club",
     "###",
 ]
 helpmessage = "hey, i'm botanybot. i water plants on ~club. my prefix is % and i was made by randomuser. check out https://ttm.sh/FoF.txt for more information."
@@ -45,13 +45,22 @@ class Server(BaseServer):
                 await self.msg(channel, helpmessage, user)
             if line.params[-1][0] == '%':
                 commands = line.params[-1][1:].split(' ')
-                if commands[0] == "vodka":
+                if commands[0] == "score":
+                    if len(commands) == 2:
+                        if self.isDrunk(): b = Botany(commands[1])
+                        else:
+                            b = Botany(userchooser(commands[1]))
+                            while b.getInfo() == []:
+                                b = Botany(userchooser(commands[1]))
+                        i = b.getInfo()
+                        await self.msg(channel, "{}'s score: {}".format(b.user, str(int(b.score()))), user)
+                elif commands[0] == "vodka":
                     if self.isDrunk():
                         self.drunkentime = int(time.time())
                         await self.msg(channel, "glug glug glug", user)
                     else:
                         await self.msg(channel, "vodka? what's vodka? *burp*", user)
-                if commands[0] == "desc":
+                elif commands[0] == "desc":
                     if len(commands) == 2:
                         if self.isDrunk():
                             b = Botany(commands[1])
