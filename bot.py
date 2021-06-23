@@ -15,7 +15,7 @@ from secrets import PASSWORD
 
 channels = [
     "#bots",
-    "#club",
+#    "#club",
     "###",
 ]
 helpmessage = "hey, i'm botanybot. i water plants on ~club. my prefix is % and i was made by randomuser. check out https://ttm.sh/Fs4.txt for more information."
@@ -63,6 +63,15 @@ class Server(BaseServer):
                             b = Botany(userchooser(commands[1]))
                     i = b.getInfo()
                     await self.msg(channel, "{}'s score: {}".format(b.user, str(int(b.score()))), user)
+                elif commands[0] == "pct":
+                    if len(commands) == 1: commands.append(user)
+                    b = Botany(commands[1])
+                    i = b.getInfo()
+                    if len(i) > 1:
+                        pct = (1 - ((time.time() - i['last_watered'])/86400)) * 100
+                        await self.msg(channel, "plant percentage for {}: {}%".format(b.user, int(pct)), user)
+                    else:
+                        await self.msg(channel, "couldn't find plant for {}".format(commands[1]), user)
                 elif commands[0] == "vodka":
                     if self.isDrunk():
                         self.drunkentime = int(time.time())
