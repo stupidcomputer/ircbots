@@ -29,11 +29,16 @@ commands
   %join #chaos
   joined the channel
 
-%chowner <nick>
-  change the admin of the bot, for the session
-  - requires admin privs
+%{add,del}owner <nick>
+  add or remove owner status from a nick (admins)
 
-  %chowner rndusx
-  admin changed
+%amowner
+  determine if you are an owner
+
+%ping
+  pong!
+
+%eval <code>
+  evaluate the result of python code (admins)
 
 see tildegit.org/randomuser/botanybot for the source

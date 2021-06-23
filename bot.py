@@ -18,7 +18,7 @@ channels = [
 #    "#club",
     "###",
 ]
-helpmessage = "hey, i'm botanybot. i water plants on ~club. my prefix is % and i was made by randomuser. check out https://ttm.sh/FoF.txt for more information."
+helpmessage = "hey, i'm botanybot. i water plants on ~club. my prefix is % and i was made by randomuser. check out https://ttm.sh/Fs4.txt for more information."
 
 def userchooser(user):
     return random.choice([i for i in os.listdir(r"/home") if i[0] == user[0]])
