@@ -23,6 +23,14 @@ helpmessage = "hey, i'm botanybot. i water plants on ~club. my prefix is % and i
 def userchooser(user):
     return random.choice([i for i in os.listdir(r"/home") if i[0] == user[0]])
 
+# borrowed from kiedtl/ircbot
+async def _aexec(self, code):
+    # Make an async function with the code and `exec` it
+    exec(f"async def __ex(self): " + "".join(f"\n {l}" for l in code.split("\n")))
+
+    # Get `__ex` from local variables, call it and return the result
+    return await locals()["__ex"](self)
+
 class Server(BaseServer):
     admin = Admin('rndusr')
     async def msg(self, chan, string, user=None):
@@ -117,6 +125,25 @@ class Server(BaseServer):
                     else:
                         await self.msg(channel, "two arguments required", user)
                         return
+                elif commands[0] == "amowner":
+                    if user == self.admin:
+                        await self.msg(channel, "you're an admin", user)
+                    else:
+                        await self.msg(channel, "you're not an admin", user)
+                elif commands[0] == "ping": await self.msg(channel, "pong", user)
+                elif commands[0] == "eval":
+                    if user == self.admin:
+                        text = ' '.join(line.params[-1][1:].split(' ')[1:])
+                        try:
+                            result = await _aexec(self, text)
+                        except Exception as e:
+                            await self.msg(channel, "segfault: {}".format(repr(e)), user)
+                            return
+                        await self.msg(channel, "{}".format(result), user)
+                    else:
+                        await self.msg(channel, "must have admin to execute", user)
+
+
     async def line_send(self, line: Line):
         print(f"{self.name} > {line.format()}")
 
