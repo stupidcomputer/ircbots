@@ -9,6 +9,7 @@ from ircrobots import Server as BaseServer
 from ircrobots import ConnectionParams
 
 from botany import IRCBotany as Botany
+from admin import Admin
 
 from secrets import PASSWORD
 
@@ -23,7 +24,7 @@ def userchooser(user):
     return random.choice([i for i in os.listdir(r"/home") if i[0] == user[0]])
 
 class Server(BaseServer):
-    admin = 'rndusr'
+    admin = Admin('rndusr')
     async def msg(self, chan, string, user=None):
         if user == None: await self.send(build("PRIVMSG", [chan, string]))
         else: await self.send(build("PRIVMSG", [chan, user + ": " + string]))
@@ -89,11 +90,26 @@ class Server(BaseServer):
                         if user == self.admin:
                             await self.send(build("JOIN", [commands[1]]))
                             await self.msg(channel, "joined the channel {}".format(commands[1]), user)
-                elif commands[0] == "chowner":
+                elif commands[0] == "addowner":
                     if len(commands) == 2:
                         if user == self.admin:
-                            self.admin = commands[1]
-                            await self.msg(channel, "admin changed to {}".format(commands[1]), user)
+                            self.admin.append(commands[1])
+                            await self.msg(channel, "admin added: {}".format(commands[1]), user)
+                            return
+                        else:
+                            await self.msg(channel, "error: you must be an admin!", user)
+                            return
+                    else:
+                        await self.msg(channel, "two arguments required", user)
+                        return
+                elif commands[0] == "delowner":
+                    if len(commands) == 2:
+                        if user == self.admin:
+                            try: self.admin.remove(commands[1])
+                            except:
+                                await self.msg(channel, "problem with removing admin", user)
+                                return
+                            await self.msg(channel, "admin deleted: {}".format(commands[1]), user)
                             return
                         else:
                             await self.msg(channel, "error: you must be an admin!", user)
