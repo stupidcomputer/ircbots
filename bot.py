@@ -55,14 +55,14 @@ class Server(BaseServer):
             if line.params[-1][0] == '%':
                 commands = line.params[-1][1:].split(' ')
                 if commands[0] == "score":
-                    if len(commands) == 2:
-                        if self.isDrunk(): b = Botany(commands[1])
-                        else:
+                    if len(commands) == 1: commands.append(user)
+                    if self.isDrunk(): b = Botany(commands[1])
+                    else:
+                        b = Botany(userchooser(commands[1]))
+                        while b.getInfo() == []:
                             b = Botany(userchooser(commands[1]))
-                            while b.getInfo() == []:
-                                b = Botany(userchooser(commands[1]))
-                        i = b.getInfo()
-                        await self.msg(channel, "{}'s score: {}".format(b.user, str(int(b.score()))), user)
+                    i = b.getInfo()
+                    await self.msg(channel, "{}'s score: {}".format(b.user, str(int(b.score()))), user)
                 elif commands[0] == "vodka":
                     if self.isDrunk():
                         self.drunkentime = int(time.time())
@@ -70,27 +70,25 @@ class Server(BaseServer):
                     else:
                         await self.msg(channel, "vodka? what's vodka? *burp*", user)
                 elif commands[0] == "desc":
-                    if len(commands) == 2:
-                        if self.isDrunk():
-                            b = Botany(commands[1])
-                        else:
-                            b = Botany(userchooser(commands[1]))
-                        await self.msg(channel, b.plantDescription(), user)
+                    if len(commands) == 1: commands.append(user)
+                    if self.isDrunk():
+                        b = Botany(commands[1])
                     else:
-                        await self.msg(channel, "specify user", user)
+                        b = Botany(userchooser(commands[1]))
+                    await self.msg(channel, b.plantDescription(), user)
                 elif commands[0] == "water":
-                    if len(commands) == 2:
-                        if self.isDrunk():
-                            b = Botany(commands[1])
-                            if b.water("{} (via IRC)".format(user)):
-                                await self.msg(channel, b.watered(), user)
-                            else:
-                                await self.msg(channel, b.cantWater(), user)
-                        else:
-                            b = Botany(userchooser(commands[1]))
-                            while not b.water("{} (via IRC".format(user)):
-                                b = Botany(userchooser(commands[1]))
+                    if len(commands) == 1: commands.append(user)
+                    if self.isDrunk():
+                        b = Botany(commands[1])
+                        if b.water("{} (via IRC)".format(user)):
                             await self.msg(channel, b.watered(), user)
+                        else:
+                            await self.msg(channel, b.cantWater(), user)
+                    else:
+                        b = Botany(userchooser(commands[1]))
+                        while not b.water("{} (via IRC)".format(user)):
+                            b = Botany(userchooser(commands[1]))
+                        await self.msg(channel, b.watered(), user)
                 elif commands[0] == "help":
                     await self.msg(channel, helpmessage, user)
                 elif commands[0] == "join":
@@ -98,6 +96,10 @@ class Server(BaseServer):
                         if user == self.admin:
                             await self.send(build("JOIN", [commands[1]]))
                             await self.msg(channel, "joined the channel {}".format(commands[1]), user)
+                        else:
+                            await self.msg(channel, "you're not an admin", user)
+                    else:
+                        await self.msg(channel, "specify the channel", user)
                 elif commands[0] == "addowner":
                     if len(commands) == 2:
                         if user == self.admin:
