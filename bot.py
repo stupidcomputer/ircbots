@@ -21,7 +21,7 @@ channels = [
 helpmessage = "hey, i'm botanybot. i water plants on ~club. my prefix is % and i was made by randomuser. check out https://ttm.sh/Fs4.txt for more information."
 
 def userchooser(user):
-    return random.choice([i for i in os.listdir(r"/home") if i[0] == user[0]])
+    return random.choice([i for i in os.listdir(r"/home") if i.lower()[0] == user.lower()[0]])
 
 # borrowed from kiedtl/ircbot
 async def _aexec(self, code):
@@ -37,7 +37,7 @@ class Server(BaseServer):
         if user == None: await self.send(build("PRIVMSG", [chan, string]))
         else: await self.send(build("PRIVMSG", [chan, user + ": " + string]))
     def isDrunk(self):
-        if abs(self.drunkentime - int(time.time())) > 30: return True
+        if abs(self.drunkentime - int(time.time())) > 60 * 4: return True
         return False
     async def line_read(self, line: Line):
         print(f"{self.name} < {line.format()}")
