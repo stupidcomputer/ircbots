@@ -52,6 +52,8 @@ class Server(BaseServer):
             channel = line.params[0]
             if line.params[-1] == "!rollcall":
                 await self.msg(channel, helpmessage, user)
+            if line.params[-1] == "!botlist":
+                await self.msg(channel, helpmessage, user)
             if line.params[-1][0] == '%':
                 commands = line.params[-1][1:].split(' ')
                 if commands[0] == "score":
