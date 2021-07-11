@@ -67,8 +67,9 @@ class Server(BaseServer):
                     if len(commands) == 1: commands.append(user)
                     b = Botany(commands[1])
                     i = b.getInfo()
+                    await self.msg(channel, "warning: the %pct command is experimental and could possibly not work. you have been warned.", user)
                     if len(i) > 1:
-                        pct = (1 - ((time.time() - i['last_watered'])/86400)) * 100
+                        pct = max((1 - ((time.time() - i['last_watered'])/86400)) * 100, 0)
                         await self.msg(channel, "plant percentage for {}: {}%".format(b.user, int(pct)), user)
                     else:
                         await self.msg(channel, "couldn't find plant for {}".format(commands[1]), user)
