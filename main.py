@@ -9,18 +9,14 @@ from db import DuckStats
 
 from channels import ChannelDB
 
+from lang import lang
+
+from admin import Admin
+
 from irctokens import build, Line
 from ircrobots import Bot as BaseBot
 from ircrobots import Server as BaseServer
 from ircrobots import ConnectionParams
-
-lang = {
-    "noduck": "there was no duck! you missed by {} seconds!",
-    "noduckstart": "there was no duck!",
-    "duckcought": "duck has been cought by {} in channel {} in {} seconds!",
-    "duck": "・゜゜・。。・゜゜\_o< QUACK!",
-    "stats": "{} has befriended {} ducks in {} different channels, having a befriend/loss ratio of {}.",
-}
 
 class DuckLogic:
     async def new_duck(self):
