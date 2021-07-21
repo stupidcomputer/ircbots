@@ -127,7 +127,7 @@ def parse_args():
     parser.add_argument('-p', '--port', default=6667, type=int)
     parser.add_argument('-t', '--tls', action="store_true")
     parser.add_argument('-n', '--nick', default="test")
-    parser.add_argument('-p', '--password', default=password)
+    parser.add_argument('-a', '--password', default=password)
     return parser.parse_args()
 
 if __name__ == "__main__":
