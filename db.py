@@ -16,6 +16,16 @@ class DuckDB:
         for i in self.db:
             fd.write(i.stringify() + "\n")
 
+    def read(self, location):
+        fd = open(location, "r")
+        self.parse(fd)
+        fd.close()
+
+    def write(self, location):
+        fd = open(location, "w")
+        self.output(fd)
+        fd.close
+
 class DuckEvent:
     def __init__(self, line=None):
         self.status = ""
