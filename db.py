@@ -6,10 +6,12 @@ class DuckDB:
             fd = open(location, "r")
             self.parse(fd)
             fd.close()
+
     def parse(self, fd):
         lines = [i.rstrip() for i in fd.readlines()]
         for i in lines:
             self.db.append(DuckEvent(i))
+
     def output(self, fd):
         for i in self.db:
             fd.write(i.stringify() + "\n")
@@ -22,6 +24,7 @@ class DuckEvent:
         self.offset = None
         self.channel = None
         if not line == None: self.internalize(line)
+
     def internalize(self, line):
         self.status = line[0].upper()
         spl = line.split(' ')
@@ -29,6 +32,7 @@ class DuckEvent:
         self.time = float(spl[1])
         self.offset = float(spl[2])
         self.channel = spl[3]
+
     def stringify(self):
         return "{}{} {} {} {}".format(
             self.status,
@@ -41,15 +45,18 @@ class DuckEvent:
 class DuckStats:
     def __init__(self, db):
         self.db = db
+
     def countstatus(self, nick, status):
         cnt = 0
         for i in self.db.db:
-            if i.status == status and i.nick == nick:
-                cnt += 1
+            if i.status == status and i.nick == nick: cnt += 1
         return cnt
+
     def cought(self, nick):
         return self.countstatus(nick, "B")
+
     def missed(self, nick):
         return self.countstatus(nick, "M")
+
     def ratio(self, nick):
         return (self.cought(nick) / self.missed(nick)) * 100
