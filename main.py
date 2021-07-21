@@ -6,6 +6,8 @@ from db import DuckDB
 from db import DuckEvent
 from db import DuckStats
 
+from channels import ChannelDB
+
 from irctokens import build, Line
 from ircrobots import Bot as BaseBot
 from ircrobots import Server as BaseServer
@@ -57,6 +59,7 @@ class Server(BaseServer, DuckLogic):
     duckactivetime = 0
     lastduck = 0
     db = "duckdb"
+    chandb = "chandb"
 
     async def msg(self, chan, msg, usr=None):
         if usr != None:
@@ -69,7 +72,9 @@ class Server(BaseServer, DuckLogic):
     async def line_read(self, line: Line):
         print(f"{self.name} < {line.format()}")
         if line.command == "001":
-            await self.send(build("JOIN", ["#testchannel"]))
+            chans = ChannelDB(self.chandb)
+            for i in chans.list():
+                await self.send(build("JOIN", [i]))
         elif line.command == "PRIVMSG":
             print(line.params)
             print(line.hostmask.nickname)
@@ -94,7 +99,14 @@ class Server(BaseServer, DuckLogic):
             self.messages += 1
             await self.duck_test()
         elif line.command == "INVITE":
+            chans = ChannelDB(self.chandb)
             await self.send(build("JOIN", [line.params[1]]))
+            chans.add(line.params[1])
+            chans.write(self.chandb)
+        elif line.command == "KICK":
+            chans = ChannelDB(self.chandb)
+            chans.remove(line.params[0])
+            chans.write(self.chandb)
 
     async def line_send(self, line: Line):
         print(f"{self.name} > {line.format()}")
