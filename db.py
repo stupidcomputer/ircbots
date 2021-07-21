@@ -13,7 +13,7 @@ class DuckDB:
                 str(reltime),
                 channel,
             )
-        )
+        ))
 
     def parse(self, fd):
         lines = [i.rstrip() for i in fd.readlines()]
