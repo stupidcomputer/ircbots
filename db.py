@@ -77,7 +77,7 @@ class DuckStats:
         return self.countstatus(nick, "M")
 
     def ratio(self, nick):
-        return (self.cought(nick) / self.missed(nick)) * 100
+        return self.cought(nick) / self.missed(nick)
 
     def channels(self, nick):
         channels = set()
