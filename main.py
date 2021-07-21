@@ -17,21 +17,7 @@ lang = {
     "duck": "・゜゜・。。・゜゜\_o< QUACK!",
 }
 
-class Server(BaseServer):
-    messages = 0
-    duckactive = False
-    duckactivetime = 0
-    lastduck = 0
-    db = "duckdb"
-
-    async def msg(self, chan, msg, usr=None):
-        if usr != None:
-            await self.send(build("PRIVMSG", [chan, usr + ": " + msg]))
-        else: await self.send(build("PRIVMSG", [chan, msg]))
-
-    async def msgall(self, msg):
-        [await self.msg(channel, msg) for channel in self.channels]
-
+class DuckLogic:
     async def new_duck(self):
         self.messages = 0
         self.duckactive = True
@@ -63,6 +49,21 @@ class Server(BaseServer):
             db.add("M", user, time.time(), -1, chan)
         db.write(self.db)
 
+class Server(BaseServer, DuckLogic):
+    messages = 0
+    duckactive = False
+    duckactivetime = 0
+    lastduck = 0
+    db = "duckdb"
+
+    async def msg(self, chan, msg, usr=None):
+        if usr != None:
+            await self.send(build("PRIVMSG", [chan, usr + ": " + msg]))
+        else: await self.send(build("PRIVMSG", [chan, msg]))
+
+    async def msgall(self, msg):
+        [await self.msg(channel, msg) for channel in self.channels]
+
     async def line_read(self, line: Line):
         print(f"{self.name} < {line.format()}")
         if line.command == "001":
@@ -75,7 +76,7 @@ class Server(BaseServer):
                 chan = line.params[0]
                 user = line.hostmask.nickname
                 if cmd == "bef": await self.duck_action(user, chan)
-                if cmd == "trigger": await self.new_duck()
+                elif cmd == "trigger": await self.new_duck()
                 return
 
             self.messages += 1
