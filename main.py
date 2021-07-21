@@ -76,8 +76,6 @@ class Server(BaseServer, DuckLogic):
             for i in chans.list():
                 await self.send(build("JOIN", [i]))
         elif line.command == "PRIVMSG":
-            print(line.params)
-            print(line.hostmask.nickname)
             if line.params[1][0] == '%':
                 cmd = line.params[1].split(' ')[0][1:]
                 chan = line.params[0]
