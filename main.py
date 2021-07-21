@@ -1,6 +1,7 @@
 import asyncio
 import random
 import time
+import argparse
 
 from db import DuckDB
 from db import DuckEvent
@@ -113,11 +114,21 @@ class Bot(BaseBot):
     def create_server(self, name: str):
         return Server(self, name)
 
-async def main():
+async def main(srv, port, tls, nick):
+    print(srv, port, tls, nick)
     bot = Bot()
-    params = ConnectionParams("test", "beepboop.systems", 6667, False)
-    await bot.add_server("beep", params)
+    params = ConnectionParams(nick, srv, port, tls)
+    await bot.add_server("main", params)
     await bot.run()
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="cross-channel duck bot")
+    parser.add_argument('-s', '--host', default="beepboop.systems")
+    parser.add_argument('-p', '--port', default=6667, type=int)
+    parser.add_argument('-t', '--tls', action="store_true")
+    parser.add_argument('-n', '--nick', default="test")
+    return parser.parse_args()
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    args = parse_args()
+    asyncio.run(main(args.host, args.port, args.tls, args.nick))
