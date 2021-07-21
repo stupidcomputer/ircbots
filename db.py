@@ -2,10 +2,7 @@ class DuckDB:
     def __init__(self, location=None):
         self.location = location
         self.db = []
-        if location != None:
-            fd = open(location, "r")
-            self.parse(fd)
-            fd.close()
+        if location != None: read(location)
 
     def parse(self, fd):
         lines = [i.rstrip() for i in fd.readlines()]
