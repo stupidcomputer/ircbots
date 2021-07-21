@@ -127,10 +127,10 @@ def parse_args():
     parser.add_argument('-p', '--port', default=6667, type=int)
     parser.add_argument('-t', '--tls', action="store_true")
     parser.add_argument('-n', '--nick', default="test")
-    parser.add_argument('-p', '--ns-pass', default=password)
+    parser.add_argument('-p', '--pass', default=password)
     return parser.parse_args()
 
 if __name__ == "__main__":
     args = parse_args()
-    password = args.ns-pass
+    password = args.pass
     asyncio.run(main(args.host, args.port, args.tls, args.nick))
