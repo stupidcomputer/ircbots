@@ -82,5 +82,5 @@ class DuckStats:
     def channels(self, nick):
         channels = set()
         for i in self.db.db:
-            if i.nick = nick: channels.append(i.channel)
+            if i.nick == nick: channels.append(i.channel)
         return len(channels)
