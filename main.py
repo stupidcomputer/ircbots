@@ -30,16 +30,20 @@ class Server(BaseServer):
         self.duckactive = True
         self.duckactivetime = time.time()
         await self.msgall(lang["duck"])
+    async def misstime(self):
+        return format(time.time() - self.lastduck, '.2f')
+    async def coughttime(self):
+        return format(self.lastduck - self.duckactivetime, '.2f')
     async def duck_action(self, user, chan):
         if self.duckactive:
             self.duckactive = False
             self.messages = 0
             self.lastduck = time.time()
-            await self.msgall(lang["duckcought"].format(user, chan, format(self.lastduck - self.duckactivetime, '.2f')))
+            await self.msgall(lang["duckcought"].format(user, chan, self.coughttime())))
         elif self.lastduck != 0:
-            await self.msg(chan, lang["noduck"].format(format(time.time() - self.lastduck, '.2f')), user)
+            await self.msg(chan, lang["noduck"].format(self.coughttime())), user)
         else:
-            await self.msg(chan, lang["noduckstart"].format(format(time.time() - self.lastduck, '.2f')), user)
+            await self.msg(chan, lang["noduckstart"], user)
     async def line_read(self, line: Line):
         print(f"{self.name} < {line.format()}")
         if line.command == "001":
