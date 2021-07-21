@@ -78,3 +78,9 @@ class DuckStats:
 
     def ratio(self, nick):
         return (self.cought(nick) / self.missed(nick)) * 100
+
+    def channels(self, nick):
+        channels = set()
+        for i in self.db.db:
+            if i.nick = nick: channels.append(i.channel)
+        return len(channels)
