@@ -26,7 +26,7 @@ class DuckLogic:
         await self.msgall(lang["duck"])
 
     async def duck_test(self):
-        if self.messages > 1 and random.randint(0, 99) < 10: await self.new_duck()
+        if self.messages > 100 and random.randint(0, 99) < 10: await self.new_duck()
 
     async def misstime(self):
         return format(time.time() - self.lastduck, '.2f')
@@ -79,7 +79,7 @@ class Server(BaseServer, DuckLogic):
                 user = line.hostmask.nickname
                 args = line.params[1].split(' ')[1:]
                 if cmd == "bef": await self.duck_action(user, chan)
-                elif cmd == "trigger": await self.new_duck()
+#                elif cmd == "trigger": await self.new_duck()
                 elif cmd == "stats":
                     db = DuckDB(self.db)
                     stats = DuckStats(db)
