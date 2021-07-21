@@ -1,5 +1,6 @@
 import asyncio
 import random
+import time
 
 from irctokens import build, Line
 from ircrobots import Bot as BaseBot
@@ -9,25 +10,46 @@ from ircrobots import ConnectionParams
 class Server(BaseServer):
     messages = 0
     duckactive = False
+    duckactivetime = time.time()
+    lastduck = time.time()
+    async def msg(self, chan, msg, usr=None):
+        if usr != None:
+            await self.send(build("PRIVMSG", [chan, usr + ": " + msg]))
+        else: await self.send(build("PRIVMSG", [chan, msg]))
+    async def msgall(self, msg):
+        [await self.msg(channel, msg) for channel in self.channels]
+    async def new_duck(self):
+        self.messages = 0
+        self.duckactive = True
+        self.duckactivetime = time.time()
+        await self.msgall("oooooooooooC: QUACK!")
+    async def duck_action(self, user, chan):
+        if self.duckactive:
+            self.duckactive = False
+            self.messages = 0
+            self.lastduck = time.time()
+            await self.msgall("duck has been cought by {} in channel {} in {} seconds!".format(user, chan, format(self.lastduck - self.duckactivetime, '.2f')))
+        else:
+            await self.msg(chan, "there was no duck! you missed by {} seconds!".format(format(time.time() - self.lastduck, '.2f')), user)
     async def line_read(self, line: Line):
         print(f"{self.name} < {line.format()}")
         if line.command == "001":
             await self.send(build("JOIN", ["#testchannel"]))
-        if line.command == "PRIVMSG":
+        elif line.command == "PRIVMSG":
+            print(line.params)
+            print(line.hostmask.nickname)
             if line.params[1][0] == '%':
                 cmd = line.params[1][1:]
-                if cmd == "bef":
-                    if self.duckactive:
-                        self.duckactive = False
-                        await self.send(build("PRIVMSG", ["#testchannel", "you got the duck! congrats!"]))
-                    else:
-                        await self.send(build("PRIVMSG", ["#testchannel", "there was no duck!"]))
+                chan = line.params[0]
+                user = line.hostmask.nickname
+                if cmd == "bef": await self.duck_action(user, chan)
+                if cmd == "trigger": await self.new_duck()
+                return
 
             self.messages += 1
-            if self.messages > 1 and random.randint(0, 100) < 10:
-                await self.send(build("PRIVMSG", ["#testchannel", "here's a duck!"]))
-                self.messages = 0
-                self.duckactive = True
+            if self.messages > 1 and random.randint(0, 100) < 10: await self.new_duck()
+        elif line.command == "INVITE":
+            await self.send(build("JOIN", [line.params[1]]))
     async def line_send(self, line: Line):
         print(f"{self.name} > {line.format()}")
 
