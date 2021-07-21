@@ -4,6 +4,7 @@ import time
 
 from db import DuckDB
 from db import DuckEvent
+from db import DuckStats
 
 from irctokens import build, Line
 from ircrobots import Bot as BaseBot
@@ -15,6 +16,7 @@ lang = {
     "noduckstart": "there was no duck!",
     "duckcought": "duck has been cought by {} in channel {} in {} seconds!",
     "duck": "・゜゜・。。・゜゜\_o< QUACK!",
+    "stats": "{} has befriended {} ducks in {} different channels, having a befriend/loss ratio of {}.",
 }
 
 class DuckLogic:
@@ -72,11 +74,21 @@ class Server(BaseServer, DuckLogic):
             print(line.params)
             print(line.hostmask.nickname)
             if line.params[1][0] == '%':
-                cmd = line.params[1][1:]
+                cmd = line.params[1].split(' ')[0][1:]
                 chan = line.params[0]
                 user = line.hostmask.nickname
+                args = line.params[1].split(' ')[1:]
                 if cmd == "bef": await self.duck_action(user, chan)
                 elif cmd == "trigger": await self.new_duck()
+                elif cmd == "stats":
+                    db = DuckDB(self.db)
+                    stats = DuckStats(db)
+                    await self.msg(chan, lang["stats"].format(
+                        args[0],
+                        stats.cought(args[0]),
+                        stats.channels(args[0]),
+                        format(stats.ratio(args[0]), ".2f")
+                    ), user)
                 return
 
             self.messages += 1
