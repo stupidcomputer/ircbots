@@ -7,11 +7,18 @@ from ircrobots import Bot as BaseBot
 from ircrobots import Server as BaseServer
 from ircrobots import ConnectionParams
 
+lang = {
+    "noduck": "there was no duck! you missed by {} seconds!",
+    "noduckstart": "there was no duck!",
+    "duckcought": "duck has been cought by {} in channel {} in {} seconds!",
+    "duck": "・゜゜・。。・゜゜\_o< QUACK!",
+}
+
 class Server(BaseServer):
     messages = 0
     duckactive = False
-    duckactivetime = time.time()
-    lastduck = time.time()
+    duckactivetime = 0
+    lastduck = 0
     async def msg(self, chan, msg, usr=None):
         if usr != None:
             await self.send(build("PRIVMSG", [chan, usr + ": " + msg]))
@@ -22,15 +29,17 @@ class Server(BaseServer):
         self.messages = 0
         self.duckactive = True
         self.duckactivetime = time.time()
-        await self.msgall("oooooooooooC: QUACK!")
+        await self.msgall(lang["duck"])
     async def duck_action(self, user, chan):
         if self.duckactive:
             self.duckactive = False
             self.messages = 0
             self.lastduck = time.time()
-            await self.msgall("duck has been cought by {} in channel {} in {} seconds!".format(user, chan, format(self.lastduck - self.duckactivetime, '.2f')))
+            await self.msgall(lang["duckcought"].format(user, chan, format(self.lastduck - self.duckactivetime, '.2f')))
+        elif self.lastduck != 0:
+            await self.msg(chan, lang["noduck"].format(format(time.time() - self.lastduck, '.2f')), user)
         else:
-            await self.msg(chan, "there was no duck! you missed by {} seconds!".format(format(time.time() - self.lastduck, '.2f')), user)
+            await self.msg(chan, lang["noduckstart"].format(format(time.time() - self.lastduck, '.2f')), user)
     async def line_read(self, line: Line):
         print(f"{self.name} < {line.format()}")
         if line.command == "001":
