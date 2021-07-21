@@ -87,7 +87,7 @@ class Server(BaseServer, DuckLogic):
                         args[0],
                         stats.cought(args[0]),
                         stats.channels(args[0]),
-                        format(stats.ratio(args[0]), ".2f")
+                        format(stats.ratio(args[0]), ".3f")
                     ), user)
                 return
 
