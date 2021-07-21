@@ -30,6 +30,8 @@ class Server(BaseServer):
         self.duckactive = True
         self.duckactivetime = time.time()
         await self.msgall(lang["duck"])
+    async def duck_test(self):
+        if self.messages > 1 and random.randint(0, 99) < 10: await self.new_duck()
     async def misstime(self):
         return format(time.time() - self.lastduck, '.2f')
     async def coughttime(self):
@@ -60,7 +62,7 @@ class Server(BaseServer):
                 return
 
             self.messages += 1
-            if self.messages > 1 and random.randint(0, 100) < 10: await self.new_duck()
+            self.duck_test()
         elif line.command == "INVITE":
             await self.send(build("JOIN", [line.params[1]]))
     async def line_send(self, line: Line):
