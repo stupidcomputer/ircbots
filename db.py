@@ -2,7 +2,18 @@ class DuckDB:
     def __init__(self, location=None):
         self.location = location
         self.db = []
-        if location != None: read(location)
+        if location != None: self.read(location)
+
+    def add(self, state, nick, abstime, reltime, channel):
+        self.db.append(DuckEvent(
+            "{}{} {} {} {}".format(
+                state,
+                nick,
+                str(abstime),
+                str(reltime),
+                channel,
+            )
+        )
 
     def parse(self, fd):
         lines = [i.rstrip() for i in fd.readlines()]
