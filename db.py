@@ -32,7 +32,7 @@ class DuckDB:
     def write(self, location):
         fd = open(location, "w")
         self.output(fd)
-        fd.close
+        fd.close()
 
 class DuckEvent:
     def __init__(self, line=None):
