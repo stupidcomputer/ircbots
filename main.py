@@ -13,6 +13,9 @@ from lang import lang
 
 from admin import Admin
 
+# fill in with password = "password"
+from secret import password
+
 from irctokens import build, Line
 from ircrobots import Bot as BaseBot
 from ircrobots import Server as BaseServer
@@ -59,6 +62,7 @@ class Server(BaseServer, DuckLogic):
     chandb = "chandb"
 
     async def msg(self, chan, msg, usr=None):
+        await self.send(build("PRIVMSG", ["ChanServ", "identify {}".format(password)]))
         if usr != None:
             await self.send(build("PRIVMSG", [chan, usr + ": " + msg]))
         else: await self.send(build("PRIVMSG", [chan, msg]))
@@ -123,8 +127,10 @@ def parse_args():
     parser.add_argument('-p', '--port', default=6667, type=int)
     parser.add_argument('-t', '--tls', action="store_true")
     parser.add_argument('-n', '--nick', default="test")
+    parser.add_argument('-p', '--ns-pass', default=password)
     return parser.parse_args()
 
 if __name__ == "__main__":
     args = parse_args()
+    password = args.ns-pass
     asyncio.run(main(args.host, args.port, args.tls, args.nick))
