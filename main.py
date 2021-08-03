@@ -19,6 +19,8 @@
 
 import asyncio
 from importlib import import_module as mod_include
+import os
+import sys
 
 from irctokens import build, Line
 from ircrobots import Bot as BaseBot
@@ -92,4 +94,6 @@ async def main():
     await bot.run()
 
 if __name__ == "__main__":
+    os.chdir("mods")
+    sys.path.append(os.getcwd())
     asyncio.run(main())
