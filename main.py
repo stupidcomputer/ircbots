@@ -29,8 +29,7 @@ class Server(BaseServer):
         print(f"{self.name} < {line.format()}")
         if line.command == "001":
             await self.send(build("JOIN", ["#testchannel"]))
-            self.load_mod("test")
-            self.load_mod("test2")
+            self.load_mod("default")
         self.event_handle(line)
 
     def load_mod(self, name):
@@ -55,7 +54,7 @@ class Server(BaseServer):
         if event == None: return False
         try:
             for i in self.handlers[event]:
-                i(line)
+                i(line, self)
         except IndexError: return False
         return True
 
