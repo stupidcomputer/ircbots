@@ -26,4 +26,3 @@ def cmdparse(line):
     try: params = splitted[1:]
     except IndexError: params = None
     return (command, params)
-
