@@ -59,6 +59,10 @@ class Server(BaseServer):
                 self.handlers[i].append([name, getattr(mod, i)])
         self.states[name] = None
 
+    def unload_mod(self, name):
+        for i in EVENTS:
+            self.handlers[i] = [j for j in self.handlers[i] if not j[0] == name]
+
     def event_get(self, line: Line):
         if line.command.lower() in EVENTS[2:]:
             return line.command.lower()
