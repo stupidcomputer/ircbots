@@ -18,3 +18,12 @@ from irctokens import build
 
 def message(srv, channel, msg):
     srv.send(build("PRIVMSG", [channel, msg]))
+
+def cmdparse(line):
+    splitted = line.params[1].split(' ')
+    try: command = splitted[0][1:]
+    except IndexError: command = None
+    try: params = splitted[1:]
+    except IndexError: params = None
+    return (command, params)
+

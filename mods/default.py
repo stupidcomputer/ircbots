@@ -1,9 +1,13 @@
 import utils
 
 def cmd(line, srv):
-    splitted = line.params[1].split(' ')
-    command = splitted[0][1:]
+    command, params = utils.cmdparse(line)
     if command == "load":
-        srv.load_mod(splitted[1])
-        utils.message(srv, line.params[0],
-            "loaded: " + splitted[1])
+        try:
+            srv.load_mod(params[0])
+        except ModuleNotFoundError:
+            utils.message(srv, line.params[0],
+                "failed to load `" + params[0] + "'")
+        else:
+            utils.message(srv, line.params[0],
+                "loaded: `" + params[0] + "'")
