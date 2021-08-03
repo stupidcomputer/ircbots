@@ -56,7 +56,7 @@ class Server(BaseServer):
         mod = mod_include(name)
         for i in EVENTS:
             if hasattr(mod, i):
-                self.handlers[i].append(getattr(mod, i))
+                self.handlers[i].append([name, getattr(mod, i)])
         self.states[name] = None
 
     def event_get(self, line: Line):
@@ -74,7 +74,9 @@ class Server(BaseServer):
         if event == None: return False
         try:
             for i in self.handlers[event]:
-                i(line, self)
+                ret = i[1](line, self)
+                if not ret == None:
+                    self.states[i[0]] = ret
         except IndexError: return False
         return True
 
@@ -95,5 +97,5 @@ async def main():
 
 if __name__ == "__main__":
     os.chdir("mods")
-    sys.path.append(os.getcwd())
+    sys.path = [os.getcwd()] + sys.path
     asyncio.run(main())
