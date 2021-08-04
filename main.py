@@ -6,7 +6,7 @@ from ircrobots import Server as BaseServer
 from ircrobots import ConnectionParams
 
 SERVERS = [
-    ("beep", "beepboop.systems")
+    ("tilde", "localhost")
 ]
 
 class Server(BaseServer):
