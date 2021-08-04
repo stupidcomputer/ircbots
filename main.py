@@ -6,7 +6,7 @@ from ircrobots import Server as BaseServer
 from ircrobots import ConnectionParams
 
 SERVERS = [
-    ("freenode", "chat.freenode.invalid")
+    ("beep", "beepboop.systems")
 ]
 
 class Server(BaseServer):
@@ -15,8 +15,13 @@ class Server(BaseServer):
         if line.command == "001":
             print(f"connected to {self.isupport.network}")
             await self.send(build("JOIN", ["#testchannel"]))
+            task = asyncio.create_task(self.async_hello())
+            await self.send(build("PRIVMSG", ["#testchannel", "task started"]))
     async def line_send(self, line: Line):
         print(f"{self.name} > {line.format()}")
+    async def async_hello(self):
+        await asyncio.sleep(10)
+        self.send(build("PRIVMSG", ["#testchannel", "hello"]))
 
 class Bot(BaseBot):
     def create_server(self, name: str):
@@ -25,7 +30,7 @@ class Bot(BaseBot):
 async def main():
     bot = Bot()
     for name, host in SERVERS:
-        params = ConnectionParams("BitBotNewTest", host, 6697, True)
+        params = ConnectionParams("BitBotNewTest", host, 6667, False)
         await bot.add_server(name, params)
 
     await bot.run()
