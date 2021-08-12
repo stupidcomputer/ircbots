@@ -40,10 +40,23 @@ EVENTS = [
     "part",
     "invite",
 ]
+ADMINS = ['rndusr']
 PREFIX = '*'
+
+class Admin:
+    def __init__(self, nick):
+        self.nicks = []
+        self.nicks.append(nick)
+    def __eq__(self, val):
+        return val in self.nicks
+    def append(self, nick):
+        self.nicks.append(nick)
+    def remove(self, nick):
+        self.nicks.remove(nick)
 
 class Server(BaseServer):
     handlers = {i: [] for i in EVENTS}
+    admins = [Admin(i) for i in ADMINS]
     states = {}
     async def line_read(self, line: Line):
         print(f"{self.name} < {line.format()}")
