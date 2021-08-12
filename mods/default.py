@@ -23,25 +23,31 @@ def cmd(line, srv):
         if utils.is_admin(params[0]):
             try:
                 srv.load_mod(params[0])
+                utils.message(srv, line.params[0],
+                    "loaded: `" + params[0] + "'")
             except ModuleNotFoundError:
                 utils.message(srv, line.params[0],
                     "failed to load `" + params[0] + "'")
-            else:
-                utils.message(srv, line.params[0],
-                    "loaded: `" + params[0] + "'")
         else:
             utils.message(srv, line.params[0],
-                    "invalid permissions!")
+                "invalid permissions!")
     elif command == "unload":
         if utils.is_admin(params[0]):
             try:
                 srv.unload_mod(params[0])
+                utils.message(srv, line.params[0],
+                    "unloaded: `" + params[0] + "'")
             except:
                 utils.message(srv, line.params[0],
                     "failed to unload `" + params[0] + "'")
-            else:
-                utils.message(srv, line.params[0],
-                    "unloaded: `" + params[0] + "'"
         else:
             utils.message(srv, line.params[0],
-                    "invalid permissions!")
+                "invalid permissions!")
+    elif command == "op":
+        if utils.is_admin(params[0]):
+            srv.admins.append(Admin(params[0]))
+            utils.message(srv, line.params[0],
+                "operator added")
+        else:
+            utils.message(srv, line.params[0],
+                "invalid permissions!")
