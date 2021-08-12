@@ -1,4 +1,5 @@
 from irctokens import build
+
 # This file is part of modbot.
 
 # modbot is free software: you can redistribute it and/or
@@ -26,3 +27,8 @@ def cmdparse(line):
     try: params = splitted[1:]
     except IndexError: params = None
     return (command, params)
+
+def is_admin(srv, nick):
+    return nick in srv.admins
+
+
