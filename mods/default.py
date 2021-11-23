@@ -20,7 +20,7 @@ import utils
 def cmd(line, srv):
     command, params = utils.cmdparse(line)
     if command == "load":
-        if utils.is_admin(params[0]):
+        if utils.is_admin(srv, params[0]):
             try:
                 srv.load_mod(params[0])
                 utils.message(srv, line.params[0],
@@ -32,7 +32,7 @@ def cmd(line, srv):
             utils.message(srv, line.params[0],
                 "invalid permissions!")
     elif command == "unload":
-        if utils.is_admin(params[0]):
+        if utils.is_admin(srv, params[0]):
             try:
                 srv.unload_mod(params[0])
                 utils.message(srv, line.params[0],
@@ -44,7 +44,7 @@ def cmd(line, srv):
             utils.message(srv, line.params[0],
                 "invalid permissions!")
     elif command == "op":
-        if utils.is_admin(params[0]):
+        if utils.is_admin(srv, params[0]):
             srv.admins.append(Admin(params[0]))
             utils.message(srv, line.params[0],
                 "operator added")
