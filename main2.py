@@ -14,7 +14,7 @@ class Server(BaseServer):
         if line.command == "001":
             print(f"connected to {self.isupport.network}")
             await self.send(build("JOIN", [CHANNEL]))
-            await self.send(build("PRIVMSG", ["NickServ", "identify randomuser_bots"]))
+            await self.send(build("PRIVMSG", ["NickServ", "identify GjWtS6ZHzYBUws_FULRb6RHkTUkXcqSawRDH0ZXTquusc94J_U"]))
             await self.send(build("PRIVMSG", [CHANNEL, ",redeemcoins"]))
             asyncio.create_task(self.coin_harvest())
         elif line.command == "PRIVMSG" and line.hostmask.nickname == "tildebot" and self.params.nickname in line.params[1]:
@@ -63,7 +63,7 @@ class Bot(BaseBot):
 async def main():
     bot = Bot()
     for i in [1]:
-        params = ConnectionParams("rndus" + str(i), "localhost", 6667, False)
+        params = ConnectionParams("worker" + str(i), "localhost", 6667, False)
         await bot.add_server("tilde" + str(i), params)
 
     await bot.run()
