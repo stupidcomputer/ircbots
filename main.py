@@ -28,7 +28,7 @@ from ircrobots import Server as BaseServer
 from ircrobots import ConnectionParams
 
 SERVERS = [
-    ("beep", "beepboop.systems")
+    ("localhost", "localhost")
 ]
 EVENTS = [
     "cmd",
@@ -45,9 +45,10 @@ PREFIX = '*'
 
 class Admin:
     def __init__(self, nick):
-        self.nicks = []
-        self.nicks.append(nick)
+        self.nicks = nick
     def __eq__(self, val):
+        return val in self.nicks
+    def __contains__(self, val):
         return val in self.nicks
     def append(self, nick):
         self.nicks.append(nick)
@@ -56,12 +57,12 @@ class Admin:
 
 class Server(BaseServer):
     handlers = {i: [] for i in EVENTS}
-    admins = [Admin(i) for i in ADMINS]
+    admins = Admin(ADMINS)
     states = {}
     async def line_read(self, line: Line):
         print(f"{self.name} < {line.format()}")
         if line.command == "001":
-            await self.send(build("JOIN", ["#testchannel"]))
+            await self.send(build("JOIN", ["#chaos"]))
             self.load_mod("default")
         self.event_handle(line)
 
