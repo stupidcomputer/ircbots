@@ -178,7 +178,7 @@ class Bot(BaseBot):
 
 async def main():
     bot = Bot()
-    params = ConnectionParams(BOTNAME, 'localhost', 6667, False, BOTNAME, "totally not rndusr's bot lol")
+    params = ConnectionParams(BOTNAME, 'irc.tilde.chat', 6697, True, BOTNAME, "totally not rndusr's bot lol")
     await bot.add_server('tilde', params)
     await bot.run()
 
