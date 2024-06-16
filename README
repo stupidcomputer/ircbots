@@ -3,4 +3,5 @@ welcome to chaosbot
 
 why are you doing this to yourself
 
-chaosbot is licensed under the AGPL 3.0
+chaosbot is licensed under the MIT license.
+this is because it was build with code from `ii`, a suckless project licensed under the MIT.
