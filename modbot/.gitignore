@@ -1,0 +1,6 @@
+*.log
+secrets.py
+exemptmask
+exemptnick
+kickeemask
+kickeenick
